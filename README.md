@@ -23,6 +23,11 @@ Simpler terms, you are allowed to share this program however you want, but re-us
 
 ---------------------------------------
 
+## Progress
+You can follow the development of discord.rose on my [trello](https://trello.com/b/wCT0AXRg/discordrose-development).
+
+---------------------------------------
+
 ## Features
 - Discord Token Checker
 - Mass Gift Purchaser
