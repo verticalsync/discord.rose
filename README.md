@@ -1,11 +1,12 @@
 <p align="center">
-  <img src="https://img.shields.io/github/contributors/purpl3r0se/discord.rose?style=flat"/>
-  <img src="https://img.shields.io/github/forks/purpl3r0se/discord.rose?style=flat"/>
-  <img src="https://img.shields.io/github/stars/purpl3r0se/discord.rose?style=flat"/>
-  <img src="https://img.shields.io/github/issues/purpl3r0se/discord.rose?style=flat"/>
-  <img src="https://img.shields.io/github/license/purpl3r0se/discord.rose?style=flat"/>
-  <img src="https://img.shields.io/github/repo-size/purpl3r0se/discord.rose?style=flat"/>
-  <img src="https://img.shields.io/tokei/lines/github/purpl3r0se/discord.rose?style=flat"/>
+  <img src="https://img.shields.io/github/contributors/purpl3r0se/discord.rose?style=flat-square"/>
+  <img src="https://img.shields.io/github/forks/purpl3r0se/discord.rose?style=flat-square"/>
+  <img src="https://img.shields.io/github/stars/purpl3r0se/discord.rose?style=flat-square"/>
+  <img src="https://img.shields.io/github/issues/purpl3r0se/discord.rose?style=flat-square"/>
+  <img src="https://img.shields.io/github/license/purpl3r0se/discord.rose?style=flat-square"/>
+  <img src="https://img.shields.io/github/repo-size/purpl3r0se/discord.rose?style=flat-square"/>
+  <img src="https://img.shields.io/tokei/lines/github/purpl3r0se/discord.rose?style=flat-square"/>
+  <img src="https://img.shields.io/static/v1?label=join the&message=discord&color=blue&style=flat-square&logo=discord&logoColor=white&link=https://discord.gg/j2HX38azuC"/>
 </p>
 
 ---------------------------------------
