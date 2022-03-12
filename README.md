@@ -11,8 +11,8 @@
 ---
 
 <div align="center">
-    <h3 align="center" style="font-family: monospace">discord.rose</h3>
-    <p align="center" style="font-family: monospace">Multi-tool made for <a href="https://discord.com">discord</a>, by <a href="https://github.com/purpl3r0se">purpl3r0se</a> with 💜.</p>
+    <h3 align="center">discord.rose</h3>
+    <p align="center">Multi-tool made for <a href="https://discord.com">discord</a>, by <a href="https://github.com/purpl3r0se">purpl3r0se</a> with 💜.</p>
     <a href="https://discord.com/invite/j2HX38azuC"><img src="https://img.shields.io/static/v1?label=join the&message=discord&color=blue&style=flat-square&logo=discord&logoColor=white"/></a>
 </div>
 
