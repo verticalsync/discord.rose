@@ -1,3 +1,6 @@
+# Our own files to ignore.
+# nothing rn
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
