@@ -299,7 +299,7 @@ def buygifts():
     logging.info("Getting payment methods from valid tokens.")
     asyncio.get_event_loop_policy().get_event_loop().run_until_complete(gb.checkpayments())
     logging.info("Buying nitros on tokens with payment methods.")
-    asyncio.get_event_loop().run_until_complete(gb.buy())
+    asyncio.get_event_loop_policy().get_event_loop().run_until_complete(gb.buy())
 
     print("\n")
     logging.info("Finished, press any key to return to main menu")
@@ -308,7 +308,7 @@ def buygifts():
 
 def tokenchecker():
     tc = TokenChecker()
-    asyncio.get_event_loop().run_until_complete(tc.checktokens())
+    asyncio.get_event_loop_policy().get_event_loop().run_until_complete(tc.checktokens())
 
     print("\n")
     logging.info("Finished, press any key to return to main menu")
@@ -317,7 +317,7 @@ def tokenchecker():
 
 def addcc():
     ca = CCAdder()
-    asyncio.get_event_loop().run_until_complete(ca.checktokens())
+    asyncio.get_event_loop_policy().get_event_loop().run_until_complete(ca.checktokens())
 
     print("\n")
     logging.info("Finished, press any key to return to main menu")
