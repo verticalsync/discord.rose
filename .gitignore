@@ -1,5 +1,3 @@
-# Our own files to ignore.
-
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -129,3 +127,13 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Our own files to ignore.
+
+phone locked.txt
+valid.txt
+duplicates.txt
+nitros.txt
+tokens.txt
+addresses.txt
+invalid.txt
