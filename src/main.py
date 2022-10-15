@@ -28,10 +28,10 @@ class TokenChecker():
 		os.system("cls")
 
 		self.tokens = []
-		with open("data/token checker/tokens.txt") as file:
+		with open("token checker/tokens.txt") as file:
 			self.tokens.extend(token.strip() for token in file)
 		self.res = str(time.time())
-		os.mkdir(f"data/token checker/results/{self.res}")
+		os.mkdir(f"token checker/results/{self.res}")
 		self.validtokens = []
 		self.invalidtokens = []
 		self.phonelockedtokens = []
@@ -45,12 +45,12 @@ class TokenChecker():
 					if "You need to verify your account in order to perform this action" in resp:
 						logging.info(f"Phone Locked [{magenta}{token[:22]}...{reset}]")
 						self.phonelockedtokens.append(token)
-						with open(f"data/token checker/results/{self.res}/phone locked.txt", "a+") as f:
+						with open(f"token checker/results/{self.res}/phone locked.txt", "a+") as f:
 							f.write(f"{token}\n")
 					elif "401: Unauthorized" in resp:
 						logging.info(f"Invalid      [{magenta}{token[:22]}...{reset}]")
 						self.invalidtokens.append(token)
-						with open(f"data/token checker/results/{self.res}/invalid.txt", "a+") as f:
+						with open(f"token checker/results/{self.res}/invalid.txt", "a+") as f:
 							f.write(f"{token}\n")
 					elif "You are being rate limited." in resp:
 						resp2 = await response.json()
@@ -61,7 +61,7 @@ class TokenChecker():
 					else:
 						logging.info(f"Valid        [{magenta}{token[:22]}...{reset}]")
 						self.validtokens.append(token)
-						with open(f"data/token checker/results/{self.res}/valid.txt", "a+") as f:
+						with open(f"token checker/results/{self.res}/valid.txt", "a+") as f:
 							f.write(f"{token}\n")
 		except Exception:
 			await self.check(token)
@@ -82,7 +82,7 @@ class GiftBuyer():
 		os.system("cls")
 
 		self.tokens = []
-		with open("data/gift buyer/tokens.txt") as file:
+		with open("gift buyer/tokens.txt") as file:
 			self.tokens.extend(token.strip() for token in file)
 		self.validtokens = []
 		self.invalidtokens = []
@@ -193,7 +193,7 @@ class GiftBuyer():
 								if json.get("gift_code"):
 									logging.info(
 										f"[{green}+{reset}] [{magenta}{pBrand}{reset}] Purchased nitro [{magenta}{token[:22]}...{reset}]")
-									with open("data/gift buyer/nitros.txt", "a+") as f:
+									with open("gift buyer/nitros.txt", "a+") as f:
 										code = json.get("gift_code")
 										f.write(f"discord.gift/{code}\n")
 									if self.continuebuy:
