@@ -1,3 +1,6 @@
+# personally i don't need idea folders to be here.
+.idea/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
