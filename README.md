@@ -45,4 +45,4 @@ You can suggest features to the multi-tool, by creating an issue [here](https://
 ## Features
 - Discord Token Checker
 - Mass Gift Purchaser
-- more soon™
+- more soon™ (actually probably not, not really interested in doing much with this project anymore.)
