@@ -31,6 +31,7 @@ class TokenChecker():
 		with open("token checker/tokens.txt") as file:
 			self.tokens.extend(token.strip() for token in file)
 		self.res = str(time.time())
+		os.mkdir(f"token checker/results")
 		os.mkdir(f"token checker/results/{self.res}")
 		self.validtokens = []
 		self.invalidtokens = []

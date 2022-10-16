@@ -19,7 +19,7 @@
 ---
 
 ## Installation
-First up, make sure you have python installed, recommended 3.9.x, others may work.  
+First up, make sure you have python installed, 3.9.x - 3.10.x, older not tested.  
 Then either download the source, or git clone if you know how to.  
 After that, open up `install.bat` to install all the requirements.  
 And then you can run `run.bat`, to set tokens for what you want goto `src/<what your using>/tokens.txt` and add your tokens in the tokens.txt file and proxies if wanted in `src/<what your using>/proxies.txt`.
