@@ -1,4 +1,12 @@
-import os, logging, asyncio, aiohttp, tasksio, time
+import os
+import logging
+import asyncio
+import aiohttp
+import tasksio
+import time
+import random
+
+# TODO: Refactor this entire fucking thing, it's bad code, but I'm writing this at 3:08 AM and I can't be bothered to do that.
 
 magenta = "\x1b[35;1m"
 blue = "\x1b[34;1m"
@@ -14,7 +22,15 @@ logging.basicConfig(
 )
 
 
-def headers(token):
+def getproxy(enabled: bool, proxyPath: str):
+	if not enabled:
+		return None
+	else:
+		proxies = open(proxyPath, "r").readlines()
+		return f"http://{random.choice(proxies)}"
+
+
+def headers(token: str):
 	return {"Authorization": token, "accept": "*/*", "accept-language": "en-US", "connection": "keep-alive",
 			"cookie": f"__cfduid={os.urandom(43).hex()}; __dcfduid={os.urandom(32).hex()}; locale=en-US", "DNT": "1",
 			"origin": "https://discord.com", "sec-fetch-dest": "empty", "sec-fetch-mode": "cors",
@@ -23,15 +39,20 @@ def headers(token):
 			"X-Super-Properties": "eyJvcyI6IldpbmRvd3MiLCJicm93c2VyIjoiRGlzY29yZCBDbGllbnQiLCJyZWxlYXNlX2NoYW5uZWwiOiJzdGFibGUiLCJjbGllbnRfdmVyc2lvbiI6IjEuMC45MDA0Iiwib3NfdmVyc2lvbiI6IjEwLjAuMTgzNjIiLCJvc19hcmNoIjoieDY0Iiwic3lzdGVtX2xvY2FsZSI6ImVuLVVTIiwiY2xpZW50X2J1aWxkX251bWJlciI6MTE4MjA1LCJjbGllbnRfZXZlbnRfc291cmNlIjpudWxsfQ=="}
 
 
-class TokenChecker():
+class TokenChecker:
 	def __init__(self):
 		os.system("cls")
 
+		self.useProxies = False
+		self.checked = 0
 		self.tokens = []
 		with open("token checker/tokens.txt") as file:
 			self.tokens.extend(token.strip() for token in file)
 		self.res = str(time.time())
-		os.mkdir(f"token checker/results")
+		try:
+			os.mkdir(f"token checker/results")
+		except FileExistsError:
+			pass
 		os.mkdir(f"token checker/results/{self.res}")
 		self.validtokens = []
 		self.invalidtokens = []
@@ -39,20 +60,24 @@ class TokenChecker():
 		self.duplicates = []
 
 	async def check(self, token):
+		os.system(f"title {self.checked}/{len(self.tokens)}")
 		try:
+			proxy = getproxy(self.useProxies, "token checker/proxies.txt")
 			async with aiohttp.ClientSession(headers=headers(token)) as client:
-				async with client.get("https://discord.com/api/v9/users/@me/settings") as response:
+				async with client.get("https://discord.com/api/v9/users/@me/settings", proxy=proxy) as response:
 					resp = await response.text()
 					if "You need to verify your account in order to perform this action" in resp:
 						logging.info(f"Phone Locked [{magenta}{token[:22]}...{reset}]")
 						self.phonelockedtokens.append(token)
 						with open(f"token checker/results/{self.res}/phone locked.txt", "a+") as f:
 							f.write(f"{token}\n")
+						self.checked += 1
 					elif "401: Unauthorized" in resp:
 						logging.info(f"Invalid      [{magenta}{token[:22]}...{reset}]")
 						self.invalidtokens.append(token)
 						with open(f"token checker/results/{self.res}/invalid.txt", "a+") as f:
 							f.write(f"{token}\n")
+						self.checked += 1
 					elif "You are being rate limited." in resp:
 						resp2 = await response.json()
 						retry_after = resp2.get("retry_after")
@@ -64,13 +89,17 @@ class TokenChecker():
 						self.validtokens.append(token)
 						with open(f"token checker/results/{self.res}/valid.txt", "a+") as f:
 							f.write(f"{token}\n")
-		except Exception:
+						self.checked += 1
+		# TODO: Better exception handling. (mostly for proxy errors.)
+		except Exception as e:
+			print(e)
 			await self.check(token)
 
-	async def checktokens(self):
+	async def checktokens(self, useProxies: bool):
 		os.system("cls")
+		self.useProxies = useProxies
 
-		async with tasksio.TaskPool(1000) as pool:
+		async with tasksio.TaskPool(400) as pool:
 			for token in self.tokens:
 				await pool.put(self.check(token))
 
@@ -234,11 +263,16 @@ def menu():
 
 	try:
 		choice = int(input(f"\n\nChoose -> {magenta}"))
-	except Exception:
+	except:
 		menu()
 
 	if choice == 1:
-		tokenchecker()
+		useProxies = input(f"{reset}\nUse Proxies? ({magenta}y{reset}/{magenta}n{reset}) -> {magenta}")
+		if useProxies.lower() == "y":
+			useProxies = True
+		else:
+			useProxies = False
+		tokenchecker(useProxies)
 	elif choice == 2:
 		buygifts()
 	else:
@@ -262,13 +296,14 @@ def buygifts():
 	menu()
 
 
-def tokenchecker():
+def tokenchecker(useProxies: bool):
 	tc = TokenChecker()
-	asyncio.get_event_loop_policy().get_event_loop().run_until_complete(tc.checktokens())
+	asyncio.get_event_loop_policy().get_event_loop().run_until_complete(tc.checktokens(useProxies))
 
 	print("\n")
 	logging.info("Finished, press any key to return to main menu")
 	os.system("pause >NUL")
 	menu()
+
 
 menu()
