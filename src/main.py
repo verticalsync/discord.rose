@@ -286,6 +286,11 @@ class GiftBuyer:
 											await self.actualbuy(token)
 									elif json.get("message"):
 										message = json.get("message")
+										if "overloaded" in message:
+											logging.info(
+												f"[{blue}={reset}] Currently overloaded, retrying. [{magenta}{token[:22]}...{reset}]")
+											await asyncio.sleep(500)
+											await self.actualbuy(token)
 										if message == "The resource is being rate limited.":
 											retry_after = json.get("retry_after")
 											logging.info(
