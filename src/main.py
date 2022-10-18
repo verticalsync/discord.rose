@@ -90,6 +90,9 @@ class TokenChecker:
 
 	async def check(self, ogtoken):
 		global password, email, token
+		email = ""
+		password = ""
+		token = ogtoken
 		os.system(f"title {self.checked}/{len(self.tokens)}")
 
 		if "@" in ogtoken:
