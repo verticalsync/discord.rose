@@ -2,6 +2,7 @@ import os
 import logging
 import asyncio
 import aiohttp
+from aiohttp import client_exceptions
 import tasksio
 import time
 import random
@@ -22,16 +23,16 @@ logging.basicConfig(
 )
 
 
-def getproxy(enabled: bool, proxyPath: str):
+def get_proxy(enabled: bool, proxy_path: str):
 	if not enabled:
 		return None
 	else:
-		proxies = open(proxyPath, "r").readlines()
+		proxies = open(proxy_path, "r").readlines()
 		return f"http://{random.choice(proxies)}"
 
 
-def headers(token: str):
-	return {"Authorization": token, "accept": "*/*", "accept-language": "en-US", "connection": "keep-alive",
+def headers(header_token: str):
+	return {"Authorization": header_token, "accept": "*/*", "accept-language": "en-US", "connection": "keep-alive",
 			"cookie": f"__cfduid={os.urandom(43).hex()}; __dcfduid={os.urandom(32).hex()}; locale=en-US", "DNT": "1",
 			"origin": "https://discord.com", "sec-fetch-dest": "empty", "sec-fetch-mode": "cors",
 			"sec-fetch-site": "same-origin", "referer": "https://discord.com/channels/@me", "TE": "Trailers",
@@ -72,7 +73,7 @@ class TokenChecker:
 	def __init__(self):
 		os.system("cls")
 
-		self.useProxies = False
+		self.use_proxies = False
 		self.checked = 0
 		self.tokens = []
 		with open("token checker/tokens.txt") as file:
@@ -89,7 +90,6 @@ class TokenChecker:
 		self.duplicates = []
 
 	async def check(self, ogtoken):
-		global password, email, token
 		email = ""
 		password = ""
 		token = ogtoken
@@ -104,7 +104,7 @@ class TokenChecker:
 		ftoken = email + password + token
 
 		try:
-			proxy = getproxy(self.useProxies, "token checker/proxies.txt")
+			proxy = get_proxy(self.use_proxies, "token checker/proxies.txt")
 			async with aiohttp.ClientSession(headers=headers(token)) as client:
 				async with client.get("https://discord.com/api/v9/users/@me/settings", proxy=proxy) as response:
 					resp = await response.text()
@@ -132,21 +132,19 @@ class TokenChecker:
 						with open(f"token checker/results/{self.res}/valid.txt", "a+") as f:
 							f.write(f"{ftoken}\n")
 						self.checked += 1
-		except aiohttp.client_exceptions.ClientHttpProxyError:
+		except client_exceptions.ClientHttpProxyError:
 			await self.check(ogtoken)
-		except aiohttp.client_exceptions.ServerDisconnectedError:
+		except client_exceptions.ServerDisconnectedError:
 			await self.check(ogtoken)
-		except aiohttp.client_exceptions.ClientProxyConnectionError:
-			await self.check(ogtoken)
-		except aiohttp.client_exceptions.ClientHttpProxyError:
+		except client_exceptions.ClientProxyConnectionError:
 			await self.check(ogtoken)
 		except Exception as e:
 			print(e)
 			await self.check(ogtoken)
 
-	async def checktokens(self, useProxies: bool):
+	async def check_tokens(self, use_proxies: bool):
 		os.system("cls")
-		self.useProxies = useProxies
+		self.use_proxies = use_proxies
 
 		async with tasksio.TaskPool(400) as pool:
 			for token in self.tokens:
@@ -160,7 +158,7 @@ class GiftBuyer:
 	def __init__(self):
 		os.system("cls")
 
-		self.useProxies = False
+		self.use_proxies = False
 		self.tokens = []
 		with open("gift buyer/tokens.txt") as file:
 			self.tokens.extend(token.strip() for token in file)
@@ -169,14 +167,31 @@ class GiftBuyer:
 		self.phonelockedtokens = []
 		self.paymenttokens = []
 		self.paymentmethods = 0
-		self.type = input(f"{reset}Type ({magenta}Classic{reset}, {magenta}Boost{reset}): {magenta}").lower()
+		self.type = input(f"{reset}Type ({magenta}Basic{reset}, {magenta}Classic{reset}, {magenta}Boost{reset}): {magenta}").lower()
 		self.duration = input(
 			f"{reset}Duration{reset} ({magenta}Month{reset}, {magenta}Year{reset}): {magenta}").lower()
 		self.continuebuyq = input(
 			f"{reset}Try to buy again after success? {reset}({magenta}y{reset}/{magenta}n{reset}): {magenta}")
 
 		self.continuebuy = self.continuebuyq == "y"
-		if self.type == "classic":
+		if self.type == "basic":
+			logging.info(f"{red}You cannot buy basic gifts currently.{reset}")
+			time.sleep(5)
+			exit()
+
+			self.nitro_id = ""
+
+			if self.duration == "month":
+				self.sku_id = ""
+				self.nitro_price = "299"
+			elif self.duration == "year":
+				self.sku_id = ""
+				self.nitro_price = "2999"
+			else:
+				logging.info(f"{red}Invalid duration{reset}")
+				time.sleep(5)
+				exit()
+		elif self.type == "classic":
 			self.nitro_id = "521846918637420545"
 
 			if self.duration == "month":
@@ -187,6 +202,7 @@ class GiftBuyer:
 				self.nitro_price = "4999"
 			else:
 				logging.info(f"{red}Invalid duration{reset}")
+				time.sleep(5)
 				exit()
 		elif self.type == "boost":
 			self.nitro_id = "521847234246082599"
@@ -199,9 +215,11 @@ class GiftBuyer:
 				self.nitro_price = "9999"
 			else:
 				logging.info(f"{red}Invalid duration{reset}")
+				time.sleep(5)
 				exit()
 		else:
 			logging.info(f"{red}Invalid type{reset}")
+			time.sleep(5)
 			exit()
 
 	async def check(self, token):
@@ -225,21 +243,28 @@ class GiftBuyer:
 					else:
 						logging.info(f"Valid        [{magenta}{token[:22]}...{reset}] - {resp[:30]}")
 						self.validtokens.append(token)
-		except Exception:
+		except client_exceptions.ClientHttpProxyError:
 			await self.check(token)
+		except client_exceptions.ServerDisconnectedError:
+			await self.check(token)
+		except client_exceptions.ClientProxyConnectionError:
+			await self.check(token)
+		except Exception as e:
+			logging.info(
+				f"[{yellow}/{reset}] Exception: {magenta}{e}{reset} [{magenta}{token[:22]}...{reset}]")
 
 	async def payment(self, token):
 		async with aiohttp.ClientSession(headers=headers(token)) as client:
 			async with client.get("https://discord.com/api/v9/users/@me/billing/payment-sources") as response:
 				resp = await response.json()
-				if resp != []:
+				if resp:
 					self.paymenttokens.append(token)
 					for _ in resp:
 						self.paymentmethods += 1
 
-	async def checktokens(self, useProxies: bool):
+	async def check_tokens(self, use_proxies: bool):
 		os.system("cls")
-		self.useProxies = useProxies
+		self.use_proxies = use_proxies
 
 		async with tasksio.TaskPool(1000) as pool:
 			for token in self.tokens:
@@ -248,37 +273,37 @@ class GiftBuyer:
 		logging.info(
 			f"Checked {magenta}{len(self.validtokens) + len(self.invalidtokens) + len(self.phonelockedtokens)}{reset} tokens, {magenta}{len(self.validtokens)}{reset} valid, {magenta}{len(self.invalidtokens)}{reset} invalid, {magenta}{len(self.phonelockedtokens)}{reset} phone locked")
 
-	async def checkpayments(self):
+	async def check_payments(self):
 		async with tasksio.TaskPool(75) as pool:
 			for token in self.validtokens:
 				await pool.put(self.payment(token))
 
 	async def actualbuy(self, token):
-		proxy = getproxy(self.useProxies, "gift buyer/proxies.txt")
+		proxy = get_proxy(self.use_proxies, "gift buyer/proxies.txt")
 		# TODO: Rewrite this thing as well because this code is worse than my will to live.
 		async with aiohttp.ClientSession(headers=headers(token)) as client:
 			try:
 				async with client.get("https://discord.com/api/v9/users/@me/billing/payment-sources",
-									  proxy=proxy) as response:
+										proxy=proxy) as response:
 					resp = await response.json()
-					if resp != []:
+					if resp:
 						for source in resp:
 							try:
 								try:
-									pBrand = source["brand"]
-								except Exception:
-									pBrand = "paypal"
-								sID = source["id"]
+									payment_brand = source["brand"]
+								except KeyError:
+									payment_brand = "paypal"
+								source_id = source["id"]
 								async with client.post(f"https://discord.com/api/v9/store/skus/{self.nitro_id}/purchase",
-													   json={"gift": True, "sku_subscription_plan_id": self.sku_id,
-															 "payment_source_id": sID, "payment_source_token": None,
-															 "expected_amount": self.nitro_price,
-															 "expected_currency": "usd",
-															 "purchase_token": "500fb34b-671a-4614-a72e-9d13becc2e95"}) as response:
-									json = await response.json()
+														json={"gift": True, "sku_subscription_plan_id": self.sku_id,
+															"payment_source_id": source_id, "payment_source_token": None,
+															"expected_amount": self.nitro_price,
+															"expected_currency": "usd",
+															"purchase_token": "500fb34b-671a-4614-a72e-9d13becc2e95"}) as purchase_response:
+									json = await purchase_response.json()
 									if json.get("gift_code"):
 										logging.info(
-											f"[{green}+{reset}] [{magenta}{pBrand}{reset}] Purchased nitro [{magenta}{token[:22]}...{reset}]")
+											f"[{green}+{reset}] [{magenta}{payment_brand}{reset}] Purchased nitro [{magenta}{token[:22]}...{reset}]")
 										with open("gift buyer/nitros.txt", "a+") as f:
 											code = json.get("gift_code")
 											f.write(f"discord.gift/{code}\n")
@@ -294,31 +319,27 @@ class GiftBuyer:
 										if message == "The resource is being rate limited.":
 											retry_after = json.get("retry_after")
 											logging.info(
-												f"[{red}-{reset}] [{magenta}{pBrand}{reset}] {message} [{magenta}{retry_after}{reset}] [{magenta}{token[:22]}...{reset}]")
+												f"[{red}-{reset}] [{magenta}{payment_brand}{reset}] {message} [{magenta}{retry_after}{reset}] [{magenta}{token[:22]}...{reset}]")
 										else:
 											logging.info(
-												f"[{red}-{reset}] [{magenta}{pBrand}{reset}] {message} [{magenta}{token[:22]}...{reset}]")
+												f"[{red}-{reset}] [{magenta}{payment_brand}{reset}] {message} [{magenta}{token[:22]}...{reset}]")
 									else:
 										logging.info(
-											f"[{yellow}/{reset}] [{magenta}{pBrand}{reset}] Failed to buy nitro for some reason. [{magenta}{token[:22]}...{reset}]")
-							except aiohttp.client_exceptions.ClientHttpProxyError:
+											f"[{yellow}/{reset}] [{magenta}{payment_brand}{reset}] Failed to buy nitro for some reason. [{magenta}{token[:22]}...{reset}]")
+							except client_exceptions.ClientHttpProxyError:
 								await self.actualbuy(token)
-							except aiohttp.client_exceptions.ServerDisconnectedError:
+							except client_exceptions.ServerDisconnectedError:
 								await self.actualbuy(token)
-							except aiohttp.client_exceptions.ClientProxyConnectionError:
-								await self.actualbuy(token)
-							except aiohttp.client_exceptions.ClientHttpProxyError:
+							except client_exceptions.ClientProxyConnectionError:
 								await self.actualbuy(token)
 							except Exception as e:
 								logging.info(
 									f"[{yellow}/{reset}] Exception: {magenta}{e}{reset} [{magenta}{token[:22]}...{reset}]")
-			except aiohttp.client_exceptions.ClientHttpProxyError:
+			except client_exceptions.ClientHttpProxyError:
 				await self.actualbuy(token)
-			except aiohttp.client_exceptions.ServerDisconnectedError:
+			except client_exceptions.ServerDisconnectedError:
 				await self.actualbuy(token)
-			except aiohttp.client_exceptions.ClientProxyConnectionError:
-				await self.actualbuy(token)
-			except aiohttp.client_exceptions.ClientHttpProxyError:
+			except client_exceptions.ClientProxyConnectionError:
 				await self.actualbuy(token)
 			except Exception as e:
 				logging.info(
@@ -330,42 +351,120 @@ class GiftBuyer:
 				await pool.put(self.actualbuy(token))
 
 
+class InventoryChecker:
+	def __init__(self):
+		os.system("cls")
+
+		self.use_proxies = False
+		self.tokens = []
+		with open("inventory checker/tokens.txt") as file:
+			self.tokens.extend(token.strip() for token in file)
+		self.validtokens = []
+		self.invalidtokens = []
+		self.phonelockedtokens = []
+
+	async def check(self, token):
+		try:
+			async with aiohttp.ClientSession(headers=headers(token)) as client:
+				async with client.get("https://discord.com/api/v9/users/@me/settings") as response:
+					resp = await response.text()
+					if "You need to verify your account in order to perform this action" in resp:
+						logging.info(f"Phone Locked [{magenta}{token[:22]}...{reset}] - {resp[:30]}")
+						self.phonelockedtokens.append(token)
+					elif "401: Unauthorized" in resp:
+						logging.info(f"Invalid      [{magenta}{token[:22]}...{reset}] - {resp[:30]}")
+						self.invalidtokens.append(token)
+					elif "You are being rate limited." in resp:
+						resp2 = await response.json()
+						retry_after = resp2.get("retry_after")
+						logging.info(f"Ratelimited  [retrying in {magenta}{retry_after}{reset}] - {resp[:30]}")
+						time.sleep(float(retry_after + 0.2))
+						await self.check(token)
+					else:
+						logging.info(f"Valid        [{magenta}{token[:22]}...{reset}] - {resp[:30]}")
+						self.validtokens.append(token)
+		except client_exceptions.ClientHttpProxyError:
+			await self.check(token)
+		except client_exceptions.ServerDisconnectedError:
+			await self.check(token)
+		except client_exceptions.ClientProxyConnectionError:
+			await self.check(token)
+		except Exception as e:
+			logging.info(
+				f"[{yellow}/{reset}] Exception: {magenta}{e}{reset} [{magenta}{token[:22]}...{reset}]")
+
+	async def inventory(self, token):
+		try:
+			# TODO: actually finish this.
+			proxy = get_proxy(self.use_proxies, "inventory checker/proxies.txt")
+		except client_exceptions.ClientHttpProxyError:
+			await self.inventory(token)
+		except client_exceptions.ServerDisconnectedError:
+			await self.inventory(token)
+		except client_exceptions.ClientProxyConnectionError:
+			await self.inventory(token)
+		except Exception as e:
+			logging.info(
+				f"[{yellow}/{reset}] Exception: {magenta}{e}{reset} [{magenta}{token[:22]}...{reset}]")
+
+	async def check_inventories(self):
+		async with tasksio.TaskPool(1000) as pool:
+			for token in self.validtokens:
+				await pool.put(self.inventory(token))
+
+	async def check_tokens(self, use_proxies: bool):
+		os.system("cls")
+		self.use_proxies = use_proxies
+
+		async with tasksio.TaskPool(1000) as pool:
+			for token in self.tokens:
+				await pool.put(self.check(token))
+
+		logging.info(
+			f"Checked {magenta}{len(self.validtokens) + len(self.invalidtokens) + len(self.phonelockedtokens)}{reset} tokens, {magenta}{len(self.validtokens)}{reset} valid, {magenta}{len(self.invalidtokens)}{reset} invalid, {magenta}{len(self.phonelockedtokens)}{reset} phone locked")
+
+
 def menu():
 	os.system("cls")
 	print(f"""
 {magenta}1 {reset}-> {magenta}Token Checker
 {magenta}2 {reset}-> {magenta}Mass Gift Buyer
-{magenta}3 {reset}-> {magenta}Proxy Formatter (ip:port:user:pass -> user:pass@ip:port)
+{magenta}3 {reset}-> {magenta}Gift Inventory Checker
+{magenta}4 {reset}-> {magenta}Proxy Formatter (ip:port:user:pass -> user:pass@ip:port)
 {reset}""")
+
+	choice = 0
 
 	try:
 		choice = int(input(f"\n\nChoose -> {magenta}"))
-	except:
+	except ValueError:
 		menu()
 
-	useProxies = False
+	use_proxies = False
 
-	if choice in [1, 2]:
-		useProxies = input(f"{reset}Use Proxies? ({magenta}y{reset}/{magenta}n{reset}) -> {magenta}")
-		if useProxies.lower() == "y":
-			useProxies = True
+	if choice in [1, 2, 3]:
+		use_proxies = input(f"{reset}Use Proxies? ({magenta}y{reset}/{magenta}n{reset}) -> {magenta}")
+		if use_proxies.lower() == "y":
+			use_proxies = True
 
 	if choice == 1:
-		tokenchecker(useProxies)
+		token_checker(use_proxies)
 	elif choice == 2:
-		buygifts(useProxies)
+		buy_gifts(use_proxies)
 	elif choice == 3:
-		proxyformatter()
+		check_inventory(use_proxies)
+	elif choice == 4:
+		proxy_formatter()
 	else:
 		menu()
 
 
-def buygifts(useProxies: bool):
+def buy_gifts(use_proxies: bool):
 	gb = GiftBuyer()
 	logging.info("Checking tokens.")
-	asyncio.get_event_loop_policy().get_event_loop().run_until_complete(gb.checktokens(useProxies))
+	asyncio.get_event_loop_policy().get_event_loop().run_until_complete(gb.check_tokens(use_proxies))
 	logging.info("Getting payment methods from valid tokens.")
-	asyncio.get_event_loop_policy().get_event_loop().run_until_complete(gb.checkpayments())
+	asyncio.get_event_loop_policy().get_event_loop().run_until_complete(gb.check_payments())
 	logging.info(
 		f"Got {magenta}{len(gb.paymenttokens)}{reset} tokens with payment methods, with a total of {magenta}{gb.paymentmethods}{reset} total payment methods, buying nitros.")
 	logging.info("Buying nitros on tokens with payment methods.")
@@ -377,9 +476,9 @@ def buygifts(useProxies: bool):
 	menu()
 
 
-def tokenchecker(useProxies: bool):
+def token_checker(use_proxies: bool):
 	tc = TokenChecker()
-	asyncio.get_event_loop_policy().get_event_loop().run_until_complete(tc.checktokens(useProxies))
+	asyncio.get_event_loop_policy().get_event_loop().run_until_complete(tc.check_tokens(use_proxies))
 
 	print("\n")
 	logging.info("Finished, press any key to return to main menu")
@@ -387,7 +486,19 @@ def tokenchecker(useProxies: bool):
 	menu()
 
 
-def proxyformatter():
+def check_inventory(use_proxies: bool):
+	ic = InventoryChecker()
+	asyncio.get_event_loop_policy().get_event_loop().run_until_complete(ic.check_tokens(use_proxies))
+	print("Checking inventories.")
+	asyncio.get_event_loop_policy().get_event_loop().run_until_complete(ic.check_inventories())
+
+	print("\n")
+	logging.info("Finished, press any key to return to main menu")
+	os.system("pause >NUL")
+	menu()
+
+
+def proxy_formatter():
 	pf = ProxyFormatter()
 	asyncio.get_event_loop_policy().get_event_loop().run_until_complete(pf.reformat())
 

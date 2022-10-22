@@ -33,6 +33,7 @@ You can suggest features, by creating an issue [here](https://github.com/purpl3r
 ## Features
 - Discord Token Checker
 - Mass Gift Purchaser
+- Gift Inventory Checker (not finished)
 - Proxy reformatter (pretty basic rn)
 
 ---
