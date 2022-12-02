@@ -175,17 +175,13 @@ class GiftBuyer:
 
 		self.continuebuy = self.continuebuyq == "y"
 		if self.type == "basic":
-			logging.info(f"{red}You cannot buy basic gifts currently.{reset}")
-			time.sleep(5)
-			exit()
-
-			self.nitro_id = ""
+			self.nitro_id = "978380684370378762"
 
 			if self.duration == "month":
-				self.sku_id = ""
+				self.sku_id = "978380692553465866"
 				self.nitro_price = "299"
 			elif self.duration == "year":
-				self.sku_id = ""
+				self.sku_id = "1024422698568122368"
 				self.nitro_price = "2999"
 			else:
 				logging.info(f"{red}Invalid duration{reset}")
