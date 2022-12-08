@@ -36,8 +36,11 @@ def headers(header_token: str):
 			"cookie": f"__cfduid={os.urandom(43).hex()}; __dcfduid={os.urandom(32).hex()}; locale=en-US", "DNT": "1",
 			"origin": "https://discord.com", "sec-fetch-dest": "empty", "sec-fetch-mode": "cors",
 			"sec-fetch-site": "same-origin", "referer": "https://discord.com/channels/@me", "TE": "Trailers",
-			"User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) discord/1.0.9004 Chrome/91.0.4472.164 Electron/13.6.6 Safari/537.36",
-			"X-Super-Properties": "eyJvcyI6IldpbmRvd3MiLCJicm93c2VyIjoiRGlzY29yZCBDbGllbnQiLCJyZWxlYXNlX2NoYW5uZWwiOiJzdGFibGUiLCJjbGllbnRfdmVyc2lvbiI6IjEuMC45MDA0Iiwib3NfdmVyc2lvbiI6IjEwLjAuMTgzNjIiLCJvc19hcmNoIjoieDY0Iiwic3lzdGVtX2xvY2FsZSI6ImVuLVVTIiwiY2xpZW50X2J1aWxkX251bWJlciI6MTE4MjA1LCJjbGllbnRfZXZlbnRfc291cmNlIjpudWxsfQ=="}
+			"User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) discord/1.0.9007 Chrome/91.0.4472.164 Electron/13.6.6 Safari/537.36",
+			"X-Context-Properties": "e30=",
+			"X-Debug-Options": "bugReporterEnabled",
+			"X-Discord-Locale": "en-GB",
+			"X-Super-Properties": "eyJvcyI6IldpbmRvd3MiLCJicm93c2VyIjoiRmlyZWZveCIsImRldmljZSI6IiIsInN5c3RlbV9sb2NhbGUiOiJlbi1VUyIsImJyb3dzZXJfdXNlcl9hZ2VudCI6Ik1vemlsbGEvNS4wIChXaW5kb3dzIE5UIDEwLjA7IFdpbjY0OyB4NjQ7IHJ2OjEwNy4wKSBHZWNrby8yMDEwMDEwMSBGaXJlZm94LzEwNy4wIiwiYnJvd3Nlcl92ZXJzaW9uIjoiMTA3LjAiLCJvc192ZXJzaW9uIjoiMTAiLCJyZWZlcnJlciI6IiIsInJlZmVycmluZ19kb21haW4iOiIiLCJyZWZlcnJlcl9jdXJyZW50IjoiIiwicmVmZXJyaW5nX2RvbWFpbl9jdXJyZW50IjoiIiwicmVsZWFzZV9jaGFubmVsIjoic3RhYmxlIiwiY2xpZW50X2J1aWxkX251bWJlciI6MTYzMDM1LCJjbGllbnRfZXZlbnRfc291cmNlIjpudWxsfQ=="}
 
 
 class ProxyFormatter:
@@ -175,40 +178,40 @@ class GiftBuyer:
 
 		self.continuebuy = self.continuebuyq == "y"
 		if self.type == "basic":
-			self.nitro_id = "978380684370378762"
+			self.sku_id = "978380684370378762"
 
 			if self.duration == "month":
-				self.sku_id = "978380692553465866"
-				self.nitro_price = "299"
+				self.sku_sub_id = "978380692553465866"
+				self.nitro_price = 299
 			elif self.duration == "year":
-				self.sku_id = "1024422698568122368"
-				self.nitro_price = "2999"
+				self.sku_sub_id = "1024422698568122368"
+				self.nitro_price = 2999
 			else:
 				logging.info(f"{red}Invalid duration{reset}")
 				time.sleep(5)
 				exit()
 		elif self.type == "classic":
-			self.nitro_id = "521846918637420545"
+			self.sku_id = "521846918637420545"
 
 			if self.duration == "month":
-				self.sku_id = "511651871736201216"
-				self.nitro_price = "499"
+				self.sku_sub_id = "511651871736201216"
+				self.nitro_price = 499
 			elif self.duration == "year":
-				self.sku_id = "511651876987469824"
-				self.nitro_price = "4999"
+				self.sku_sub_id = "511651876987469824"
+				self.nitro_price = 4999
 			else:
 				logging.info(f"{red}Invalid duration{reset}")
 				time.sleep(5)
 				exit()
 		elif self.type == "boost":
-			self.nitro_id = "521847234246082599"
+			self.sku_id = "521847234246082599"
 
 			if self.duration == "month":
-				self.sku_id = "511651880837840896"
-				self.nitro_price = "999"
+				self.sku_sub_id = "511651880837840896"
+				self.nitro_price = 999
 			elif self.duration == "year":
-				self.sku_id = "511651885459963904"
-				self.nitro_price = "9999"
+				self.sku_sub_id = "511651885459963904"
+				self.nitro_price = 9999
 			else:
 				logging.info(f"{red}Invalid duration{reset}")
 				time.sleep(5)
@@ -290,12 +293,17 @@ class GiftBuyer:
 								except KeyError:
 									payment_brand = "paypal"
 								source_id = source["id"]
-								async with client.post(f"https://discord.com/api/v9/store/skus/{self.nitro_id}/purchase",
-														json={"gift": True, "sku_subscription_plan_id": self.sku_id,
-															"payment_source_id": source_id, "payment_source_token": None,
+								async with client.post(f"https://discord.com/api/v9/store/skus/{self.sku_id}/purchase",
+														json={
 															"expected_amount": self.nitro_price,
 															"expected_currency": "usd",
-															"purchase_token": "500fb34b-671a-4614-a72e-9d13becc2e95"}) as purchase_response:
+															"gateway_checkout_context": None,
+															"gift": True,
+															"payment_source_id": source_id,
+															"payment_source_token": None,
+															"purchase_token": "6a0bcba6-403d-49f2-8839-ca76affab73e",
+															"sku_subscription_plan_id": self.sku_sub_id
+														}) as purchase_response:
 									json = await purchase_response.json()
 									if json.get("gift_code"):
 										logging.info(
