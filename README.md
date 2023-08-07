@@ -1,18 +1,18 @@
 <p align="center">
-  <img src="https://img.shields.io/github/contributors/purpl3r0se/discord.rose?style=flat-square"/>
-  <img src="https://img.shields.io/github/forks/purpl3r0se/discord.rose?style=flat-square"/>
-  <img src="https://img.shields.io/github/stars/purpl3r0se/discord.rose?style=flat-square"/>
-  <img src="https://img.shields.io/github/issues/purpl3r0se/discord.rose?style=flat-square"/>
-  <img src="https://img.shields.io/github/license/purpl3r0se/discord.rose?style=flat-square"/>
-  <img src="https://img.shields.io/github/repo-size/purpl3r0se/discord.rose?style=flat-square"/>
-  <img src="https://img.shields.io/tokei/lines/github/purpl3r0se/discord.rose?style=flat-square"/>
+  <img src="https://img.shields.io/github/contributors/verticalsync/discord.rose?style=flat-square"/>
+  <img src="https://img.shields.io/github/forks/verticalsync/discord.rose?style=flat-square"/>
+  <img src="https://img.shields.io/github/stars/verticalsync/discord.rose?style=flat-square"/>
+  <img src="https://img.shields.io/github/issues/verticalsync/discord.rose?style=flat-square"/>
+  <img src="https://img.shields.io/github/license/verticalsync/discord.rose?style=flat-square"/>
+  <img src="https://img.shields.io/github/repo-size/verticalsync/discord.rose?style=flat-square"/>
+  <img src="https://img.shields.io/tokei/lines/github/verticalsync/discord.rose?style=flat-square"/>
 </p>
 
 ---
 
 <div align="center">
     <h3 align="center">discord.rose</h3>
-    <p align="center">Nitro buyer made for <a href="https://discord.com">discord</a>, by <a href="https://github.com/purpl3r0se">purpl3r0se</a> with 💜.</p>
+    <p align="center">Nitro buyer made for <a href="https://discord.com">discord</a>, by <a href="https://github.com/verticalsync">purpl3r0se</a> with 💜.</p>
 </div>
 
 ---
@@ -26,7 +26,7 @@ And then you can run `run.bat`, to set tokens for what you want goto `src/<what 
 ---
 
 ## Suggestions
-You can suggest features, by creating an issue [here](https://github.com/purpl3r0se/discord.rose/issues/new).
+You can suggest features, by creating an issue [here](https://github.com/verticalsync/discord.rose/issues/new).
 
 ---
 
